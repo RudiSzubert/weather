@@ -22,7 +22,6 @@ import { Chart, registerables } from 'chart.js';
 export class AppComponent implements OnInit, OnDestroy {
   public expandedElement?: ICity | null;
   public columns: string[] = [ 'city', 'temp', 'wind' ];
-  public title = 'weather';
   public width = window.innerWidth * .9;
   public charts: Array<{ chart: Chart, id: string }> = [];
   public cities: Array<ICity> = [];
@@ -32,7 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
     Chart.register(...registerables);
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.init();
   }
 
@@ -45,13 +44,25 @@ export class AppComponent implements OnInit, OnDestroy {
       let chart = this.charts.find(e => e.id === chartId);
       if (!chart) {// No need to draw twice
         this.weather.getCityForecast(row.name).subscribe(data => {
-          this.drawForecast(row, data, chartId);
+          this.drawForecast(data, chartId);
         });
       }
     }
   }
 
-  public drawForecast(row: ICity, data: ICityDetails, chartId: string): void {
+  private init(): void {
+    forkJoin(cities.map(city => { return this.weather.getCityWeather(city); }))
+      .pipe(map(cities => {
+        cities.forEach(c => { c.main.temp = KelvinToCelsiusDegree(c.main.temp); })
+        return cities;
+      }),
+        takeUntil(this.destroyed$))// this isn't necessary here, but clean unsubscribing is something often forgotten
+      .subscribe((data: ICity[]) => {
+        this.cities = data;
+      });
+  }
+
+  private drawForecast(data: ICityDetails, chartId: string): void {
     const ctx = (document.getElementById(chartId) as HTMLCanvasElement)
       .getContext('2d') as CanvasRenderingContext2D;
 
@@ -71,27 +82,15 @@ export class AppComponent implements OnInit, OnDestroy {
           borderWidth: 1
         },
           {
-          label: 'Wind',
-          data: wind,
-          backgroundColor: 'rgba(75, 192, 192, 0.2)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }]
+            label: 'Wind',
+            data: wind,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+          }]
       }
     });
     this.charts.push({ chart: c, id: chartId });
-  }
-
-  private init(): void {
-    forkJoin(cities.map(city => { return this.weather.getCityWeather(city); }))
-      .pipe(map(cities => {
-        cities.forEach(c => { c.main.temp = KelvinToCelsiusDegree(c.main.temp); })
-        return cities;
-      }),
-        takeUntil(this.destroyed$))// this isn't necessary here, but clean unsubscribing is something often forgotten
-      .subscribe((data: ICity[]) => {
-        this.cities = data;
-      });
   }
 
   ngOnDestroy() {

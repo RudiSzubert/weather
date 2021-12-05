@@ -18,6 +18,8 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
+Obviously there should be more unit tests, I wouldn't fit in given time though
+
 ## Components
 
 As you can see there is only one component - app. The reason for this is simple - I've decided to use angular materials
