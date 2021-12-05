@@ -3,6 +3,9 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { WeatherService } from './weather.service';
+import { HttpClientModule } from '@angular/common/http';
+import { MatTableModule} from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -10,9 +13,11 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
   ],
   imports: [
     BrowserModule,
-    NoopAnimationsModule
+    HttpClientModule,
+    NoopAnimationsModule,
+    MatTableModule
   ],
-  providers: [],
+  providers: [WeatherService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
