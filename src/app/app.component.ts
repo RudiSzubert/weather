@@ -41,32 +41,23 @@ export class AppComponent implements OnInit, OnDestroy {
       this.expandedElement = null;
     } else {
       this.expandedElement = row;
-      this.weather.getCityForecast(row.name).subscribe(data => {
-        const chartId = 'myChart-' + row.name;
-        let chart = this.charts.find(e => e.id === chartId);
-        if (!chart) {
+      const chartId = 'myChart-' + row.name;
+      let chart = this.charts.find(e => e.id === chartId);
+      if (!chart) {// No need to draw twice
+        this.weather.getCityForecast(row.name).subscribe(data => {
           this.drawForecast(row, data, chartId);
-        }
-      });
+        });
+      }
     }
   }
 
   public drawForecast(row: ICity, data: ICityDetails, chartId: string): void {
-
     const ctx = (document.getElementById(chartId) as HTMLCanvasElement)
       .getContext('2d') as CanvasRenderingContext2D;
 
-    const labels = data.list.map(e => {
-      return e.dt_txt.split(' ')[1];
-    })
-
-    const temp = data.list.map(e => {
-      return KelvinToCelsiusDegree(e.main.temp);
-    })
-
-    const wind = data.list.map(e => {
-      return e.wind.speed;
-    })
+    const labels = data.list.map(e => e.dt_txt.split(' ')[1]);
+    const temp = data.list.map(e => KelvinToCelsiusDegree(e.main.temp));
+    const wind = data.list.map(e => e.wind.speed);
 
     const c = new Chart(ctx, {
       type: 'line',
@@ -97,7 +88,7 @@ export class AppComponent implements OnInit, OnDestroy {
         cities.forEach(c => { c.main.temp = KelvinToCelsiusDegree(c.main.temp); })
         return cities;
       }),
-        takeUntil(this.destroyed$))
+        takeUntil(this.destroyed$))// this isn't necessary here, but clean unsubscribing is something often forgotten
       .subscribe((data: ICity[]) => {
         this.cities = data;
       });

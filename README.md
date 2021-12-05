@@ -18,10 +18,17 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+## Components
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+As you can see there is only one component - app. The reason for this is simple - I've decided to use angular materials
+for table, so it wouldn't be easy to make a components for row, while making one for column wouldn't make sense -
+ - I'd need to collect e.g. temperatures from different cities for that. So I could make a component for cell, just to 
+display a single value - again not much sense. I could do a component for a details, and I think it would be the best solution
+if I'd going to develop this further, but right now it would be a single canvas with single function. 
 
-## Further help
+## Styles
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+I've used angular material to get simple, tidy and well-aligned styles for all screen sizes.
+As this page was to present some numeric data I've focused more on readability and UX, e.g. by adding charts.
+
+
